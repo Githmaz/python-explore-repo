@@ -1,1 +1,1 @@
-# python-explore-repo
+## just for educational purposes

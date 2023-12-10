@@ -1,64 +1,110 @@
-def out_of_range_check(value):
-    return value not in [0, 20, 40, 60, 80, 100, 120]
+from validations import *
+from design import *
+from bar_chart import *
 
-progress_count = 0
-trailer_count = 0
-retriever_count = 0
-exclude_count = 0
+result_counts = {}
 
-continue_program = True
+try:
+    with open("result_counts.txt", "r") as file:
+        for line in file:
+            category, count = line.strip().split(": ")
+            result_counts[category] = int(count)
 
-while continue_program:
-    try:
-        pass_credits = int(input("Enter credits at pass: "))
-        if out_of_range_check(pass_credits):
-            print("Invalid input! Please enter a valid value.")
-            continue
+except FileNotFoundError:
+    result_counts = {
+        "Progress": 0,
+        "Trailer": 0,
+        "Retriever": 0,
+        "Exclude": 0
+    }
 
-        defer_credits = int(input("Enter credits at defer: "))
-        if out_of_range_check(defer_credits):
-            print("Invalid input! Please enter a valid value.")
-            continue
 
-        fail_credits = int(input("Enter credits at fail: "))
-        if out_of_range_check(fail_credits):
-            print("Invalid input! Please enter a valid value.")
-            continue
+result_data = ["Do not progress - module retriever - 20, 80, 20","Progress - 120, 0, 0"]
 
-        total_credits = pass_credits + defer_credits + fail_credits
+def add_and_show_results(result):
+    global result_data
+    result_data.append(result)
+    print("-" * (len(result)+4))
+    print(f"  {result}")
+    print("-" * (len(result)+4))
 
-        if 0 <= total_credits <= 120:
-            if pass_credits == 120 and defer_credits == 0 and fail_credits == 0:
-                print("Progress")
-                progress_count += 1
-            elif pass_credits == 100 and 0 <= defer_credits <= 20 and 0 <= fail_credits <= 20:
-                print("Progress (module trailer)")
-                trailer_count += 1
-            elif 0 <= pass_credits <= 80 and 0 <= defer_credits <= 120 and 0 <= fail_credits <= 60:
-                print("Do not progress - module retriever")
-                retriever_count += 1
+def get_user_inputs():
+    global result_counts,result_data
+
+    while True:
+        try:
+            pass_credits = int(input("\nEnter credits at pass  : "))
+            if out_of_range_check(pass_credits):
+                continue
+
+            defer_credits = int(input("Enter credits at defer : "))
+            if out_of_range_check(defer_credits):
+                continue
+
+            fail_credits = int(input("Enter credits at fail  : "))
+            if out_of_range_check(fail_credits):
+                continue
+
+            if pass_credits + defer_credits + fail_credits == 120:
+
+                if pass_credits == 120:
+                    add_and_show_results(f"Progress - {pass_credits}, {defer_credits}, {fail_credits}")
+                    result_counts["Progress"] += 1
+                elif pass_credits == 100:
+                    add_and_show_results(f"Progress (module trailer) - {pass_credits}, {defer_credits}, {fail_credits}")
+                    result_counts["Trailer"] += 1
+                elif fail_credits >= 80:
+                    add_and_show_results(f"Exclude - {pass_credits}, {defer_credits}, {fail_credits}")
+                    result_counts["Exclude"] += 1
+                else :
+                    add_and_show_results(f"Do not progress - module retriever - {pass_credits}, {defer_credits}, {fail_credits}")
+                    result_counts["Retriever"] += 1
+
             else:
-                print("Exclude")
-                exclude_count += 1
-        else:
-            print("Incorrect total")
+                print("\nIncorrect total")
+                continue
 
-        while True:
-            option = input("Enter 'y' to input another set of data or 'q' to quit and view results: ").lower()
-            if option == 'q':
-                continue_program = False
-                break  # exit the inner loop
-            elif option == 'y':
-                break  # continue the outer loop
-            else:
-                print("Invalid option. Please enter 'y' or 'q'.")
+            break
 
-    except ValueError:
-        print("Integer required")
+        except ValueError:
+            print("Integer required")
 
-# Display summary
-print("\nSummary:")
-print(f"Progress count: {progress_count}")
-print(f"Trailer count: {trailer_count}")
-print(f"Retriever count: {retriever_count}")
-print(f"Exclude count: {exclude_count}")
+
+def main():
+    while True:
+        welcome()
+        option = input("\nEnter Your option (T,S,Q) : ").lower()
+
+        if option == 't':
+            while True:
+                get_user_inputs()
+                option = input("\nEnter 'Y' to input again, or 'any-key' to view results: ").lower()
+                if option != 'y':
+                    break
+            
+            print("\n\n                   Results",end="\n\n")
+            [print(item) for item in result_data]
+            print("\n=================================================")
+
+            with open("result_counts.txt", "w") as file:
+                for category, count in result_counts.items():
+                    file.write(f"{category}: {count}\n")
+
+            draw_bar_chart(result_counts)
+
+
+        elif option == 's':
+            get_user_inputs()
+            option = input("\nEnter 'M' to go back to menu, or  'Any-key' to quit:  " ).lower()
+            if option == 'm':
+                continue
+            return
+        
+        elif option == 'q':
+            return
+        else :
+           print(f"\n\n______ \"{option}\" is an invalid option. Please enter a valid option. _______")
+                
+
+if __name__ == "__main__":
+    main()

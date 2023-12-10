@@ -1,5 +1,8 @@
 from graphics import *
 
+
+#_______ Draws a bar chart based on the given result counts ________#
+
 def draw_bar_chart(result_counts):
     win = GraphWin("histogram", 600, 500) 
     win.setBackground("white")

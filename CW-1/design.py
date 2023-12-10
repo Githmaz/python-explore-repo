@@ -1,3 +1,5 @@
+
+#______ Displays a welcome message and menu options _______#
 def welcome():
 
     print("""

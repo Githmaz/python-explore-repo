@@ -22,6 +22,7 @@ except FileNotFoundError:
     result_data = []
 
 #______ Appends a result to the list and displays it _____#
+
 def add_and_show_results(result):
     global result_data
     result_data.append(result)
@@ -33,9 +34,25 @@ def add_and_show_results(result):
 
 def out_of_range_check(value):
     if value not in [0, 20, 40, 60, 80, 100, 120]:
-        print(f"{value} is out of range.")
+        print(f"\n{value} is out of range.")
         return True
     return False
+
+#___________ Dispaly and Save results ___________#
+def display_and_save_results():
+    # Draw a bar chart
+    draw_bar_chart(result_counts)
+
+    # Display results 
+    print("\n\n                   Results",end="\n\n")
+    [print(item) for item in result_data]
+    print("\n=================================================")
+
+    # Save results to the file.
+    with open('result_data.txt', 'w') as file:
+        for data in result_data:
+            file.write(data + '\n')
+
 
 #______ Gets user inputs for credits, validates, categorizes results, and displays the outcome. _____#
 
@@ -70,11 +87,10 @@ def get_user_inputs():
                     add_and_show_results(f"Exclude - {pass_credits}, {defer_credits}, {fail_credits}")
                     result_counts["Exclude"] += 1
                 else :
-                    add_and_show_results(f"Do not progress - module retriever - {pass_credits}, {defer_credits}, {fail_credits}")
+                    add_and_show_results(f"Module retriever - {pass_credits}, {defer_credits}, {fail_credits}")
                     result_counts["Retriever"] += 1
-
             else:
-                print("\nIncorrect total")
+                print("\nTotal Incorrect")
                 continue
 
             break
@@ -92,27 +108,19 @@ def main():
         if option == 't':
             while True:
                 get_user_inputs()
-                option = input("\nEnter 'Y' to input again, or 'Any-Key' to view results and go to menu: ").lower()
-                if option != 'y':
+                option = input("\nEnter 'Y' to input again, 'Q' to exit and view results, or 'Any-Other-Key' to view results and go to Menu: ").lower()
+                if option == 'q':
+                    display_and_save_results()
+                    return
+                elif option != 'y':
                     break
-                
-            # Display results 
-            print("\n\n                   Results",end="\n\n")
-            [print(item) for item in result_data]
-            print("\n=================================================")
 
-            # Save results to the file.
-            with open('result_data.txt', 'w') as file:
-                for data in result_data:
-                    file.write(data + '\n')
-
-            # Draw a bar chart
-            draw_bar_chart(result_counts)
+            display_and_save_results()
 
         # if user is a Student
         elif option == 's':
             get_user_inputs()
-            option = input("\nEnter 'M' to go back to menu, or  'Any-key' to quit :  " ).lower()
+            option = input("\nEnter 'M' to go back to menu, or  'Any-Other-Key' to quit :  " ).lower()
             if option == 'm':
                 continue
             return

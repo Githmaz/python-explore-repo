@@ -3,7 +3,10 @@ from graphics import *
 
 #_______ Draws a bar chart based on the given result counts ________#
 
-def draw_bar_chart(result_counts):
+def draw_bar_chart(result_list):
+    # getting the result count
+    result_counts = update_result_counts(result_list)
+
     win = GraphWin("histogram", 600, 500) 
     win.setBackground("white")
 
@@ -13,7 +16,6 @@ def draw_bar_chart(result_counts):
 
     categories = list(result_counts.keys())
     values = list(result_counts.values())
-    total_value = sum(values)
 
     bar_width = 125  
     spacing = 10
@@ -36,10 +38,32 @@ def draw_bar_chart(result_counts):
         value_label.setSize(10)
         value_label.draw(win)
 
-    total_label = Text(Point(win.getWidth() / 2, win.getHeight() -20), f"Outcomes in Total : {total_value}")  
+    total_label = Text(Point(win.getWidth() / 2, win.getHeight() -20), f"Outcomes in Total : {sum(values)}")  
     total_label.setSize(20)
     total_label.draw(win)
 
 
     win.getMouse()
     win.close()
+
+
+def update_result_counts(result_data):
+    result_counts = {
+        "Progress": 0,
+        "Trailer": 0,
+        "Retriever": 0,
+        "Exclude": 0
+    }
+
+    for item in result_data:
+        if "Exclude" in item:
+           result_counts["Exclude"] += 1
+        elif "Progress (Module Trailer)" in item:
+            result_counts["Trailer"] += 1
+        elif "Module Retriever" in item:
+            result_counts["Retriever"] += 1
+        elif "Progress" in item:           # "Progress" is in the last place because, not to mess up with "Progress (Module Trailer)"
+            result_counts["Progress"] += 1 
+
+    return result_counts
+

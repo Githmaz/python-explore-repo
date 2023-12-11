@@ -1,16 +1,9 @@
 from design import *
 from bar_chart import *
 
-#____ Result count storage for the graph ___#
-result_counts = {
-        "Progress": 0,
-        "Trailer": 0,
-        "Retriever": 0,
-        "Exclude": 0
-    }
-
 #____  Storing the result data ___#
-result_data = []
+result_data = [
+]
 
 #____ get the old result data from the text file ___#
 try:                                               
@@ -23,7 +16,7 @@ except FileNotFoundError:
 
 #______ Appends a result to the list and displays it _____#
 
-def add_and_show_results(result):
+def append_and_show_results(result):
     global result_data
     result_data.append(result)
     print("-" * (len(result)+4))
@@ -40,8 +33,10 @@ def out_of_range_check(value):
 
 #___________ Dispaly and Save results ___________#
 def display_and_save_results():
+    global result_data
+
     # Draw a bar chart
-    draw_bar_chart(result_counts)
+    draw_bar_chart(result_data)
 
     # Display results 
     print("\n\n                   Results",end="\n\n")
@@ -57,7 +52,7 @@ def display_and_save_results():
 #______ Gets user inputs for credits, validates, categorizes results, and displays the outcome. _____#
 
 def get_user_inputs():
-    global result_counts,result_data
+    global result_data
 
     while True:
         try:
@@ -78,17 +73,13 @@ def get_user_inputs():
             if pass_credits + defer_credits + fail_credits == 120:
 
                 if pass_credits == 120:
-                    add_and_show_results(f"Progress - {pass_credits}, {defer_credits}, {fail_credits}")
-                    result_counts["Progress"] += 1
+                    append_and_show_results(f"Progress - {pass_credits}, {defer_credits}, {fail_credits}")
                 elif pass_credits == 100:
-                    add_and_show_results(f"Progress (module trailer) - {pass_credits}, {defer_credits}, {fail_credits}")
-                    result_counts["Trailer"] += 1
+                    append_and_show_results(f"Progress (Module Trailer) - {pass_credits}, {defer_credits}, {fail_credits}")
                 elif fail_credits >= 80:
-                    add_and_show_results(f"Exclude - {pass_credits}, {defer_credits}, {fail_credits}")
-                    result_counts["Exclude"] += 1
+                    append_and_show_results(f"Exclude - {pass_credits}, {defer_credits}, {fail_credits}")
                 else :
-                    add_and_show_results(f"Module retriever - {pass_credits}, {defer_credits}, {fail_credits}")
-                    result_counts["Retriever"] += 1
+                    append_and_show_results(f"Module Retriever - {pass_credits}, {defer_credits}, {fail_credits}")
             else:
                 print("\nTotal Incorrect")
                 continue

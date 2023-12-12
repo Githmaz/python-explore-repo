@@ -5,3 +5,6 @@ Module Retriever - 40, 40, 40
 Module Retriever - 20, 80, 20
 Module Retriever - 20, 40, 60
 Progress (Module Trailer) - 100, 0, 20
+Progress - 120, 0, 0
+Exclude - 0, 0, 120
+Progress - 120, 0, 0

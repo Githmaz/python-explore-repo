@@ -1,24 +1,36 @@
-from design import *
-from bar_chart import *
+from graphics import *
+
+#______ Displays a welcome message and menu options _______#
+
+def welcome():
+
+    print("""
+ __      __       .__  .__                                
+/  \\    /  \\ ____ |  | |  |   ____  ____   _____   ____   
+\\   \\/\\/   _/ __ \\|  | |  | _/ ___\\/  _ \\ /     \\_/ __ \\  
+ \\        /\\  ___/|  |_|  |_\\  \\__(  <_> |  Y Y  \\  ___/  
+  \\__/\\  /  \\___  |____|____/\\___  \\____/|__|_|  /\\___  > 
+       \\/       \\/               \\/            \\/     \\/ 
+""",end="\n\n")
+    
+    print("1. Use as a teacher (Enter \"T\")")
+    print("2. Use as a student (Enter \"S\")")
+    print("3. Exit (Enter \"Q\")")
+
+
 
 #____  Storing the result data ___#
-result_data = [
-]
 
-#____ get the old result data from the text file ___#
-try:                                               
-    with open('result_data.txt', 'r') as file:
-        for line in file:
-            result_data.append(line.strip())
-except FileNotFoundError:
-    # if file doenst exit
-    result_data = []
+result_counts = {
+        "Progress": 0,
+        "Trailer": 0,
+        "Retriever": 0,
+        "Exclude": 0
+    }
 
 #______ Appends a result to the list and displays it _____#
 
-def append_and_show_results(result):
-    global result_data
-    result_data.append(result)
+def show_results(result):
     print("-" * (len(result)+4))
     print(f"  {result}")
     print("-" * (len(result)+4))
@@ -31,28 +43,57 @@ def out_of_range_check(value):
         return True
     return False
 
-#___________ Dispaly and Save results ___________#
-def display_and_save_results():
-    global result_data
+#_______ Draws a bar chart based on the given result counts ________#
 
-    # Draw a bar chart
-    draw_bar_chart(result_data)
+def draw_bar_chart(result_counts):
+    # getting the result count
 
-    # Display results 
-    print("\n\n                   Results",end="\n\n")
-    [print(item) for item in result_data]
-    print("\n=================================================")
+    win = GraphWin("histogram", 600, 500) 
+    win.setBackground("white")
 
-    # Save results to the file.
-    with open('result_data.txt', 'w') as file:
-        for data in result_data:
-            file.write(data + '\n')
+    title = Text(Point(win.getWidth()/2, 25), "Histogram Results")
+    title.setSize(25)
+    title.draw(win)
+
+    categories = list(result_counts.keys())
+    values = list(result_counts.values())
+
+    bar_width = 125  
+    spacing = 10
+    x_start = 40
+    y_scale = 350/max(values)
+
+    for i in range(len(categories)):
+        x = x_start + i * (bar_width + spacing)
+        y = win.getHeight() - values[i] * y_scale - 75
+        
+        bar = Rectangle(Point(x, win.getHeight() - 75), Point(x + bar_width, y))
+        bar.setFill(["#FF9999", "#99FF99", "#9999FF", "#FFD700"][i])  
+        bar.draw(win)
+
+        label = Text(Point(x + bar_width / 2, win.getHeight() - 65), categories[i])
+        label.setSize(15)
+        label.draw(win)
+
+        value_label = Text(Point(x + bar_width / 2, y - 10), str(values[i]))
+        value_label.setSize(15)
+        value_label.draw(win)
+
+    total_label = Text(Point(win.getWidth() / 2, win.getHeight() -20), f"Outcomes in Total : {sum(values)}")  
+    total_label.setSize(20)
+    total_label.draw(win)
+
+
+    win.getMouse()
+    win.close()
+
 
 
 #______ Gets user inputs for credits, validates, categorizes results, and displays the outcome. _____#
 
 def get_user_inputs():
-    global result_data
+    global result_counts
+
 
     while True:
         try:
@@ -73,13 +114,17 @@ def get_user_inputs():
             if pass_credits + defer_credits + fail_credits == 120:
 
                 if pass_credits == 120:
-                    append_and_show_results(f"Progress - {pass_credits}, {defer_credits}, {fail_credits}")
+                    show_results("Progress")
+                    result_counts["Progress"] += 1
                 elif pass_credits == 100:
-                    append_and_show_results(f"Progress (Module Trailer) - {pass_credits}, {defer_credits}, {fail_credits}")
+                    show_results("Progress (Module Trailer)")
+                    result_counts["Trailer"] += 1
                 elif fail_credits >= 80:
-                    append_and_show_results(f"Exclude - {pass_credits}, {defer_credits}, {fail_credits}")
+                    show_results(f"Exclude")
+                    result_counts["Exclude"] += 1
                 else :
-                    append_and_show_results(f"Module Retriever - {pass_credits}, {defer_credits}, {fail_credits}")
+                    show_results(f"Module Retriever")
+                    result_counts["Retriever"] += 1
             else:
                 print("\nTotal Incorrect")
                 continue
@@ -90,6 +135,7 @@ def get_user_inputs():
             print("Integer required")
 
 #______ Main program loop that interacts with the user ______#
+
 def main():
     while True:
         welcome()
@@ -101,12 +147,12 @@ def main():
                 get_user_inputs()
                 option = input("\nEnter 'Y' to input again, 'Q' to exit and view results, or 'Any-Other-Key' to view results and go to Menu: ").lower()
                 if option == 'q':
-                    display_and_save_results()
+                    draw_bar_chart(result_counts)
                     return
                 elif option != 'y':
                     break
 
-            display_and_save_results()
+            draw_bar_chart(result_counts)
 
         # if user is a Student
         elif option == 's':

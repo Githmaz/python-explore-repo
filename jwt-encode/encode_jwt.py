@@ -3,15 +3,14 @@ from datetime import datetime, timedelta
 
 user_data = {
   "userName": "Sandaru",
-  "email": "SandaruGithma@icloud.com",
-  "address1": "123 Main St",
-  "phone1": "11",
+  "email": "SandaruGithmawrwrwrwrrw@icloud.com",
+  "phone1": "1123232323",
   "phoneVerified": 1,
   "emailVerified": 1,
   "profilePicUrl": "https://example.com/profile.jpg",
   "userRole": {
     "roleName": "admin",
-    "roleDesc": "all"
+    "roleDesc": ""
   },
   "userCountry": {
     "country": "USA"
@@ -30,7 +29,7 @@ payload = {
     "exp": expiry_time
 }
 
-secret_key = "1234"
+secret_key = "Romifly"
 encoded_jwt = jwt.encode(payload, secret_key, algorithm="HS256")
 
 print("\n\n\n",encoded_jwt)
